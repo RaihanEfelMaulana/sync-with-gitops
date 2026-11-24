@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: hello-vm-cloudinit
+  namespace: vm-sample
+stringData:
+  userdata: |
+    #cloud-config
+    password: redhat123
+    chpasswd: { expire: false }
+    write_files:
+      - path: /opt/www/index.html
+        content: "Hello from VM - DC (Primary) v1\n"
+      - path: /etc/systemd/system/hello.service
+        content: |
+          [Unit]
+          Description=Hello web
+          After=network-online.target
+          [Service]
+          WorkingDirectory=/opt/www
+          ExecStart=/usr/bin/python3 -m http.server 8080
+          Restart=always
+          [Install]
+          WantedBy=multi-user.target
+    runcmd:
+      - systemctl daemon-reload
+      - systemctl enable --now hello.service
