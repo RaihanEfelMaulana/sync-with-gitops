@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello-vm
+  namespace: vm-sample
+spec:
+  selector:
+    app: hello-vm
+  ports:
+    - port: 8080
+      targetPort: 8080
