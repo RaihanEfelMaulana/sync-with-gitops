@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: vm-sample
+  namespace: openshift-gitops
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/RaihanEfelMaulana/gitops-vm.git
+    targetRevision: main
+    path: overlays/dc
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: vm-sample
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: false
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+  ignoreDifferences:
+    - group: kubevirt.io
+      kind: VirtualMachine
+      jqPathExpressions:
+        - .spec.template.metadata.creationTimestamp
+        - .spec.dataVolumeTemplates
